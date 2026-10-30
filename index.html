@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>មេគុណ ១ ដល់ ១២ - Telegram Mini App</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Khmer -->
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Kantumruy Pro', sans-serif;
+            background-color: #0d1117;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(22, 27, 34, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .glass-modal {
+            background: rgba(13, 17, 23, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 9999px;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-sliding-row {
+            display: flex;
+            width: max-content;
+            animation: marquee 25s linear infinite;
+        }
+        .animate-sliding-row:hover {
+            animation-play-state: paused;
+        }
+        .paused-animation {
+            animation-play-state: paused !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+    <!-- INITIAL SPLASH SCREEN (Auto-dismisses) -->
+    <div id="splash-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 transition-opacity duration-700 p-4">
+        <div class="glass-modal max-w-sm w-full rounded-3xl p-8 text-center shadow-2xl border border-indigo-500/30">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl shadow-lg shadow-indigo-500/30 mb-4 animate-bounce">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <h2 class="text-xl font-bold text-white mb-2">សូមស្វាគមន៍!</h2>
+            <p class="text-xs text-indigo-200 leading-relaxed mb-6">សូមស្វាគមន៍មកកាន់កម្មវិធីមេគុណ ១ ដល់ ១២ ត្រឹមត្រូវ សប្បាយរីករាយ!</p>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div id="splash-progress" class="bg-gradient-to-r from-indigo-500 to-pink-500 h-full w-0 transition-all duration-[2000ms]"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Running Banner -->
+    <div class="bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 py-2 overflow-hidden shadow-lg border-b border-indigo-500/20">
+        <div class="inline-block whitespace-nowrap animate-pulse text-xs md:text-sm font-semibold tracking-wider text-indigo-200 px-4">
+            ✨ បញ្ជីមេគុណគណិតវិទ្យា ត្រឹមត្រូវ ១០០% • ចុចលើប្រអប់ដើម្បីផ្អាកនិងមើលលម្អិត! 🚀
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="max-w-md mx-auto w-full p-4 flex-1 flex flex-col justify-between">
+        
+        <div>
+            <!-- Header Title & Event Menu Button -->
+            <div class="text-center my-6">
+                <div class="inline-block p-3 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/30 mb-3">
+                    <i class="fa-solid fa-calculator text-2xl text-white"></i>
+                </div>
+                <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">
+                    តារាងមេគុណ ១ ដល់ ១២
+                </h1>
+                <p class="text-xs text-slate-400 mt-1">រៀនសប្បាយ ចងចាំលឿន ងាយយល់</p>
+            </div>
+
+            <!-- Event Menu Button (As requested) -->
+            <div class="mb-6">
+                <button onclick="openEventModal()" class="w-full relative group overflow-hidden rounded-2xl p-4 bg-gradient-to-r from-indigo-600 to-purple-600 font-semibold text-white shadow-xl shadow-indigo-600/20 hover:shadow-indigo-600/40 transition-all duration-300 transform active:scale-95">
+                    <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <i class="fa-solid fa-bolt text-yellow-300 animate-bounce"></i> ម៉ឺនុយព្រឹត្តិការណ៍ (Event Menu)
+                        </span>
+                        <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Animated Sliding Rows (Boxes moving horizontally from left to right) -->
+            <div class="mb-6">
+                <h2 class="text-xs font-semibold text-slate-400 mb-3 uppercase tracking-wider flex items-center justify-between">
+                    <span>ប្រអប់មេគុណរត់ (ចុចដើម្បីឈប់ & មើល)</span>
+                    <span class="text-xs text-indigo-400">១ - ១២</span>
+                </h2>
+                
+                <!-- Row 1: Sliding Container -->
+                <div class="relative w-full overflow-hidden py-2 bg-slate-900/40 rounded-2xl border border-slate-800">
+                    <div id="sliding-row-1" class="animate-sliding-row gap-3 px-3">
+                        <!-- Injected via JS (Duplicated for seamless loop) -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Static Equal Grid View for Quick Access -->
+            <div>
+                <h2 class="text-xs font-semibold text-slate-400 mb-3 uppercase tracking-wider">
+                    <span>បញ្ជីមេគុណសរុប (ដាក់ជាជួរស្មើគ្នា)</span>
+                </h2>
+                <div id="static-grid" class="grid grid-cols-4 gap-2.5">
+                    <!-- Static grid items injected via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-8 text-center text-xs text-slate-500 pb-2">
+            <p>Telegram Mini App • រចនាឡើងយ៉ាងស្រស់ស្អាត ❤️</p>
+        </footer>
+    </main>
+
+    <!-- ================= MODAL 1: EVENT MENU & CIRCULAR LOADER ================= -->
+    <div id="event-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md hidden transition-all opacity-0">
+        <div class="glass-modal w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl transform scale-95 transition-all" id="event-modal-content">
+            <div class="w-12 h-12 mx-auto rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 mb-4 border border-indigo-500/30">
+                <i class="fa-solid fa-star text-lg"></i>
+            </div>
+            
+            <h3 class="text-lg font-bold text-white mb-2">សូមស្វាគមន៍មកកាន់មេគុណ ត្រឹមត្រូវ 100%</h3>
+            <p class="text-xs text-slate-400 mb-6">ប្រព័ន្ធកំពុងដំណើរការទិន្នន័យ សូមរង់ចាំបន្តិច...</p>
+
+            <!-- Circular Loading Progress Bar -->
+            <div class="relative w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+                <svg class="w-full h-full transform -rotate-90">
+                    <circle cx="48" cy="48" r="40" stroke="currentColor" stroke-width="6" class="text-slate-800" fill="transparent"></circle>
+                    <circle id="loading-circle" cx="48" cy="48" r="40" stroke="currentColor" stroke-width="6" class="text-indigo-500 transition-all duration-100" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="251.2"></circle>
+                </svg>
+                <span id="loading-text" class="absolute text-sm font-bold text-indigo-300">០%</span>
+            </div>
+            
+            <button onclick="closeEventModal()" class="text-xs text-slate-400 hover:text-white underline">បោះបង់</button>
+        </div>
+    </div>
+
+    <!-- ================= MODAL 2: MULTIPLICATION DETAIL VIEW ================= -->
+    <div id="detail-modal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/70 backdrop-blur-md hidden transition-all opacity-0">
+        <div class="glass-modal w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl transform translate-y-full sm:scale-95 transition-all max-h-[85vh] flex flex-col" id="detail-modal-content">
+            
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div id="detail-icon" class="w-10 h-10 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold">
+                        ១
+                    </div>
+                    <div>
+                        <h3 id="detail-title" class="text-lg font-bold text-white">មេគុណ ១</h3>
+                        <p class="text-xs text-slate-400">តារាងគុណលេខពេញលេញ</p>
+                    </div>
+                </div>
+                <button onclick="closeDetailModal()" class="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Equations List Container -->
+            <div id="equations-container" class="my-3 overflow-y-auto space-y-2 pr-1 flex-1">
+                <!-- Equations injected via JS -->
+            </div>
+
+            <!-- Audio Speech Button & Footer -->
+            <div class="pt-4 border-t border-slate-800 flex gap-3">
+                <button onclick="speakTable()" id="speak-btn" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 active:scale-95">
+                    <i class="fa-solid fa-volume-high text-base"></i> អានសំឡេងមេគុណ (Speech)
+                </button>
+                <button onclick="closeDetailModal()" class="py-3 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-sm transition-all">
+                    បិទ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Alert Box -->
+    <div id="custom-alert" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 bg-slate-900 border border-indigo-500/40 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 opacity-0 pointer-events-none">
+        <i class="fa-solid fa-circle-check text-indigo-400 text-lg"></i>
+        <span id="alert-message" class="text-xs font-medium">សារជូនដំណឹង</span>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let currentTableNum = 1;
+
+        // On window load: Handle Splash screen and Render Boxes
+        window.onload = function() {
+            // Splash screen animation timer
+            setTimeout(() => {
+                document.getElementById('splash-progress').style.width = '100%';
+            }, 100);
+
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.classList.add('opacity-0');
+                setTimeout(() => splash.remove(), 700);
+            }, 2000);
+
+            renderTables();
+        };
+
+        function toKhmerNum(num) {
+            const khmerNums = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+            return num.toString().split('').map(digit => khmerNums[parseInt(digit)] !== undefined ? khmerNums[parseInt(digit)] : digit).join('');
+        }
+
+        // Render Sliding Rows and Static Grid
+        function renderTables() {
+            const slidingRow1 = document.getElementById('sliding-row-1');
+            const staticGrid = document.getElementById('static-grid');
+
+            let slidingHtml = '';
+            let staticHtml = '';
+
+            // Generate items 1 to 12 twice for smooth marquee loop
+            for (let round = 0; round < 2; round++) {
+                for (let i = 1; i <= 12; i++) {
+                    slidingHtml += `
+                        <button onclick="handleBoxClick(${i}, this)" class="glass-card flex-shrink-0 w-28 py-3 px-2 rounded-2xl flex flex-col items-center justify-center gap-1 hover:border-indigo-500 hover:bg-indigo-950/40 transition-all shadow-md active:scale-95 group">
+                            <div class="w-7 h-7 rounded-full bg-indigo-500/10 group-hover:bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs transition-colors">
+                                ${toKhmerNum(i)}
+                            </div>
+                            <span class="text-xs font-bold text-slate-200">មេគុណ ${toKhmerNum(i)}</span>
+                        </button>
+                    `;
+                }
+            }
+
+            for (let i = 1; i <= 12; i++) {
+                staticHtml += `
+                    <button onclick="handleBoxClick(${i}, this)" class="glass-card p-2.5 rounded-xl flex flex-col items-center justify-center gap-1 hover:border-indigo-500 hover:bg-indigo-950/40 transition-all shadow active:scale-95 group">
+                        <span class="text-xs font-bold text-slate-300 group-hover:text-white">មេ ${toKhmerNum(i)}</span>
+                    </button>
+                `;
+            }
+
+            slidingRow1.innerHTML = slidingHtml;
+            staticGrid.innerHTML = staticHtml;
+        }
+
+        // When user clicks a box: pause animation or select table
+        function handleBoxClick(num, element) {
+            // Pause sliding row animation temporarily
+            const slidingRow = document.getElementById('sliding-row-1');
+            slidingRow.classList.add('paused-animation');
+
+            // Select table & open detail modal
+            selectTable(num);
+        }
+
+        // --- Event Modal (Welcome & Circular Loader) ---
+        function openEventModal() {
+            const modal = document.getElementById('event-modal');
+            const modalContent = document.getElementById('event-modal-content');
+            const circle = document.getElementById('loading-circle');
+            const loadingText = document.getElementById('loading-text');
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+
+            let progress = 0;
+            const circumference = 251.2;
+            
+            if (window.loadingInterval) clearInterval(window.loadingInterval);
+
+            window.loadingInterval = setInterval(() => {
+                progress += 2;
+                if (progress > 100) {
+                    progress = 100;
+                    clearInterval(window.loadingInterval);
+                    setTimeout(() => {
+                        closeEventModal();
+                        showAlert("សូមស្វាគមន៍! ប្រព័ន្ធត្រឹមត្រូវ ១០០%");
+                        selectTable(1);
+                    }, 400);
+                }
+                loadingText.innerText = toKhmerNum(progress) + '%';
+                const offset = circumference - (progress / 100) * circumference;
+                circle.style.strokeDashoffset = offset;
+            }, 25);
+        }
+
+        function closeEventModal() {
+            if (window.loadingInterval) clearInterval(window.loadingInterval);
+            const modal = document.getElementById('event-modal');
+            const modalContent = document.getElementById('event-modal-content');
+            
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // --- Multiplication Detail Modal ---
+        function selectTable(num) {
+            currentTableNum = num;
+            const modal = document.getElementById('detail-modal');
+            const modalContent = document.getElementById('detail-modal-content');
+            const detailTitle = document.getElementById('detail-title');
+            const detailIcon = document.getElementById('detail-icon');
+            const equationsContainer = document.getElementById('equations-container');
+
+            detailTitle.innerText = `មេគុណ ${toKhmerNum(num)}`;
+            detailIcon.innerText = toKhmerNum(num);
+
+            let eqsHtml = '';
+            for (let i = 1; i <= 12; i++) {
+                let product = num * i;
+                eqsHtml += `
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-indigo-500/40 transition-colors">
+                        <span class="text-sm font-medium text-slate-300">
+                            ${toKhmerNum(num)} × ${toKhmerNum(i)}
+                        </span>
+                        <span class="text-sm font-bold text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-lg">
+                            = ${toKhmerNum(product)}
+                        </span>
+                    </div>
+                `;
+            }
+            equationsContainer.innerHTML = eqsHtml;
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('translate-y-full', 'scale-95');
+                modalContent.classList.add('translate-y-0', 'scale-100');
+            }, 10);
+        }
+
+        function closeDetailModal() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            const modal = document.getElementById('detail-modal');
+            const modalContent = document.getElementById('detail-modal-content');
+
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('translate-y-0', 'scale-100');
+            modalContent.classList.add('translate-y-full', 'scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                // Resume sliding row animation when closed
+                document.getElementById('sliding-row-1').classList.remove('paused-animation');
+            }, 300);
+        }
+
+        // --- Speech Synthesis ---
+        function speakTable() {
+            if (!('speechSynthesis' in window)) {
+                showAlert("រុករករបស់អ្នកមិនគាំទ្រសំឡេងទេ!");
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+
+            let textToRead = `មេគុណ ${currentTableNum}។ `;
+            for (let i = 1; i <= 12; i++) {
+                textToRead += `${currentTableNum} គុណនឹង ${i} ស្មើនឹង ${currentTableNum * i}។ `;
+            }
+
+            const utterance = new SpeechSynthesisUtterance(textToRead);
+            utterance.lang = 'km-KH';
+            utterance.rate = 0.9;
+
+            const speakBtn = document.getElementById('speak-btn');
+            speakBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> កំពុងអាន...`;
+            speakBtn.disabled = true;
+
+            utterance.onend = function() {
+                speakBtn.innerHTML = `<i class="fa-solid fa-volume-high text-base"></i> អានសំឡេងមេគុណ (Speech)`;
+                speakBtn.disabled = false;
+            };
+
+            utterance.onerror = function() {
+                speakBtn.innerHTML = `<i class="fa-solid fa-volume-high text-base"></i> អានសំឡេងមេគុណ (Speech)`;
+                speakBtn.disabled = false;
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function showAlert(msg) {
+            const alertBox = document.getElementById('custom-alert');
+            const alertMsg = document.getElementById('alert-message');
+            alertMsg.innerText = msg;
+
+            alertBox.classList.remove('opacity-0', 'pointer-events-none');
+            alertBox.classList.add('opacity-100', 'translate-y-2');
+
+            setTimeout(() => {
+                alertBox.classList.remove('opacity-100', 'translate-y-2');
+                alertBox.classList.add('opacity-0', 'pointer-events-none');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
